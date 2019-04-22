@@ -1,52 +1,20 @@
-import json
-import os
-import random
-import bottle
+from flask import Flask, request, jsonify
+import os, random, math, controller
+from datetime import datetime
+from timeit import default_timer as timer
 
-from api import ping_response, start_response, move_response, end_response
+app = Flask(__name__) 
 
-@bottle.route('/')
-def index():
-    return '''
-    Battlesnake documentation can be found at
-       <a href="https://docs.battlesnake.io">https://docs.battlesnake.io</a>.
-    '''
-
-@bottle.route('/static/<path:path>')
-def static(path):
-    """
-    Given a path, return the static file located relative
-    to the static folder.
-
-    This can be used to return the snake head URL in an API response.
-    """
-    return bottle.static_file(path, root='static/')
-
-@bottle.post('/ping')
-def ping():
-    """
-    A keep-alive endpoint used to prevent cloud application platforms,
-    such as Heroku, from sleeping the application instance.
-    """
-    return ping_response()
-
-@bottle.post('/start')
+@app.route("/start", methods=["POST"]) 
 def start():
-    data = bottle.request.json
+    global width
+    global height
+    global game_id
 
-    """
-    TODO: If you intend to have a stateful snake AI,
-            initialize your snake state here using the
-            request's data if necessary.
-    """
-    print(json.dumps(data))
+    #NOTE NOT SURE WHAT JSONIFY IS DOING JUST YET FIGURE THIS OUT
+    return jsonify( color = "#E0FFFF", secondary_color = "#000000", name = "SLIMEYSNAKE", taunt = "SLIME GANG DADDY", head_type="shades", tail_type="freckled", head_url="https://pbs.twimg.com/profile_images/919244128843653120/6NE6SBBL_400x400.jpg")
 
-    color = "#00FF00"
-
-    return start_response(color)
-
-
-@bottle.post('/move')
+@app.route("/move", methods=["POST"])
 def move():
     data = bottle.request.json
 
