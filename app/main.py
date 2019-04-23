@@ -3,7 +3,7 @@ import os, random, math
 from datetime import datetime
 from timeit import default_timer as timer
 
-app = Flask(__name__) 
+app = Flask(__name__.split('.')[0]) 
 
 @app.route("/start", methods=["POST"]) 
 def start():
@@ -12,7 +12,7 @@ def start():
     global game_id
 
     #NOTE NOT SURE WHAT JSONIFY IS DOING JUST YET FIGURE THIS OUT
-    return jsonify( color = "#E0FFFF", secondary_color = "#000000", name = "SLIMEYSNAKE", taunt = "SLIME GANG DADDY", head_type="evil", tail_type="bolt", head_url="https://pbs.twimg.com/profile_images/919244128843653120/6NE6SBBL_400x400.jpg")
+    return jsonify( color = "000000", secondary_color = "#000000", name = "SLIMEYSNAKE", taunt = "SLIME GANG DADDY", head_type="evil", tail_type="bolt", head_url="https://pbs.twimg.com/profile_images/919244128843653120/6NE6SBBL_400x400.jpg")
 
 @app.route("/move", methods=["POST"])
 def move():
@@ -22,11 +22,25 @@ def move():
     game = data.get("game")
     game_id = data.get("id")
     turn = data.get("food")
-    board = data.get("board")
-    height = data.get("board").get("height")
-    width = data.get("board").get("width")
 
-    myHealth = you.get("health")
+    #NOTE Get everything that our snake will need to know, i.e. everything to set up our grid.
+    board = data.get("board")
+    height = board.get("height")
+    width = board.get("width")
+    food = board.get("food").get("data")
+    snakes = board.get("snakes").get("data")
+
+    #NOTE Get all the information about our snake
+    thisSnake = data.get("you")
+    thisHealth = thisSnake.get("health")
+    thisBody = thisSnake.get("body").get("data")
+
+    #NOTE Batch above groups of information into tuples to pass into master
+    environment = (board, height, width, food, snakes)
+    ourSnake = (thisSnake, thisHealth, thisBody)
+
+    #NOTE MasterTower is where the magic happens
+    result = MasterTower(environemnt, ourSnake)
 
     if debug:
         start = timer()
@@ -36,6 +50,7 @@ def move():
         print("Game height:{} , Game width: {}".format(height, width))
         print('')
         print('turn = {}'.format(data.get("turn")))
+        print('')
 
 @app.route("/end", methods=["POST"])
 def end(): 
