@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-import os, random, math
+import os, random, math, MasterTower
 from datetime import datetime
 from timeit import default_timer as timer
 
@@ -18,6 +18,7 @@ def start():
 def move():
     debug = True
     data = request.get_json()
+    print(data)
     
     game = data.get("game")
     game_id = data.get("id")
@@ -27,20 +28,20 @@ def move():
     board = data.get("board")
     height = board.get("height")
     width = board.get("width")
-    food = board.get("food").get("data")
-    snakes = board.get("snakes").get("data")
+    food = data.get("board").get("food")
+    snakes = data.get("board").get("snakes")
 
     #NOTE Get all the information about our snake
     thisSnake = data.get("you")
     thisHealth = thisSnake.get("health")
-    thisBody = thisSnake.get("body").get("data")
+    thisBody = thisSnake.get("body")
 
     #NOTE Batch above groups of information into tuples to pass into master
     environment = (board, height, width, food, snakes)
     ourSnake = (thisSnake, thisHealth, thisBody)
 
     #NOTE MasterTower is where the magic happens
-    result = MasterTower(environemnt, ourSnake)
+    result = MasterTower.initGrid(environment, ourSnake)
 
     if debug:
         start = timer()
@@ -51,6 +52,8 @@ def move():
         print('')
         print('turn = {}'.format(data.get("turn")))
         print('')
+
+    print(result)
 
 @app.route("/end", methods=["POST"])
 def end(): 
