@@ -12,7 +12,7 @@ def start():
     global game_id
 
     #NOTE NOT SURE WHAT JSONIFY IS DOING JUST YET FIGURE THIS OUT
-    return jsonify( color = "#E0FFFF", secondary_color = "#000000", name = "SLIMEYSNAKE", taunt = "SLIME GANG DADDY", head_type="shades", tail_type="freckled", head_url="https://pbs.twimg.com/profile_images/919244128843653120/6NE6SBBL_400x400.jpg")
+    return jsonify( color = "#E0FFFF", secondary_color = "#000000", name = "SLIMEYSNAKE", taunt = "SLIME GANG DADDY", head_type="evil", tail_type="bolt", head_url="https://pbs.twimg.com/profile_images/919244128843653120/6NE6SBBL_400x400.jpg")
 
 @app.route("/move", methods=["POST"])
 def move():
@@ -42,13 +42,9 @@ def end():
 
     return end_response()
 
-# Expose WSGI app (so gunicorn can find it)
-application = bottle.default_app()
+@app.route("/end", methods=["POST"])
+def end(): 
+    return '', 200
 
-if __name__ == '__main__':
-    bottle.run(
-        application,
-        host=os.getenv('IP', '0.0.0.0'),
-        port=os.getenv('PORT', '8080'),
-        debug=os.getenv('DEBUG', True)
-    )
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', debug=True, use_reloader=True)
