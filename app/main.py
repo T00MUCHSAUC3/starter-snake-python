@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-import os, random, math, controller
+import os, random, math
 from datetime import datetime
 from timeit import default_timer as timer
 
@@ -16,21 +16,26 @@ def start():
 
 @app.route("/move", methods=["POST"])
 def move():
+    debug = True
     data = request.get_json()
     
-    print(data) 
+    game = data.get("game")
+    game_id = data.get("id")
+    turn = data.get("food")
+    board = data.get("board")
+    height = data.get("board").get("height")
+    width = data.get("board").get("width")
 
-@bottle.post('/end')
-def end():
-    data = bottle.request.json
+    myHealth = you.get("health")
 
-    """
-    TODO: If your snake AI was stateful,
-        clean up any stateful objects here.
-    """
-    print(json.dumps(data))
-
-    return end_response()
+    if debug:
+        start = timer()
+        print('')
+        print("Health:{}".format(myHealth))
+        print('')
+        print("Game height:{} , Game width: {}".format(height, width))
+        print('')
+        print('turn = {}'.format(data.get("turn")))
 
 @app.route("/end", methods=["POST"])
 def end(): 
