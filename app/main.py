@@ -40,8 +40,12 @@ def move():
     environment = (board, height, width, food, snakes)
     ourSnake = (thisSnake, thisHealth, thisBody)
 
-    #NOTE MasterTower is where the magic happens
+    #NOTE MasterTower is where the magic happens, here we "build" our grid
     result = MasterTower.initGrid(environment, ourSnake)
+
+    #NOTE get information about our snake
+    ourSnakeX = thisBody[0].get("X")
+    ourSnakeY = thisBody[0].get("Y")
 
     if debug:
         start = timer()
