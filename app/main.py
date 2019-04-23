@@ -46,7 +46,7 @@ def move():
     if debug:
         start = timer()
         print('')
-        print("Health:{}".format(myHealth))
+        print("Health:{}".format(thisHealth))
         print('')
         print("Game height:{} , Game width: {}".format(height, width))
         print('')

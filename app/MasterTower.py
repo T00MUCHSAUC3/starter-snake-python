@@ -14,10 +14,10 @@ def initGrid(env, OS):
     #NOTE SET UP FOOD LOCATIONS
     food_coord = []
     for coord in env[3]:
-        x = food.get("x")
-        y = food.get("y")
-        food_coord.append([x, y])
+        x = coord.get("x")
+        y = coord.get("y")
         print("FOOD: ", x, y)
+        food_coord.append([x, y])
 
     final_grid = [grid, food_coord]
 
