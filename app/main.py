@@ -1,74 +1,74 @@
+import os, random, math, controller
 from flask import Flask, request, jsonify
-import os, random, math, MasterTower
 from datetime import datetime
 from timeit import default_timer as timer
 
-app = Flask(__name__.split('.')[0]) 
+app = Flask(__name__) #App is now an instance of Flask.
 
-@app.route("/start", methods=["POST"]) 
+@app.route("/start", methods=["POST"])
 def start():
-    global width
     global height
+    global width
     global game_id
+    #data = request.get_json()
+    #game_id = data.get("game_id")
+    #height = data.get("height")
+    #width = data.get("width")
+    #NOTE Trying to get height and width here was giving me problems!
 
-    #NOTE NOT SURE WHAT JSONIFY IS DOING JUST YET FIGURE THIS OUT
-    return jsonify( color = "000000", secondary_color = "#000000", name = "SLIMEYSNAKE", taunt = "SLIME GANG DADDY", head_type="evil", tail_type="bolt", head_url="https://pbs.twimg.com/profile_images/919244128843653120/6NE6SBBL_400x400.jpg")
+    return jsonify( color = "#E0FFFF", secondary_color = "#000000", name = "FeistySnake", taunt = "Mess with Snekko, better run like hecko", head_type = "shades", tail_type = "freckled", head_url = "http://scp-wiki.wdfiles.com/local--files/scp-1545/Larry%20the%20Loving%20Llama.jpg")
 
 @app.route("/move", methods=["POST"])
 def move():
     debug = True
     data = request.get_json()
-    
-    game = data.get("game")
-    game_id = data.get("id")
-    turn = data.get("food")
+    width = data.get("width")
+    height = data.get("height")
+    food = data.get("food").get("data") #Array
+    snakes = data.get("snakes").get("data") #Array
+    you = data.get("you")
+    myHealth = you.get("health")
+    myLength = you.get("body").get("length")
+    mySnake = you.get("body").get("data")
 
-    #NOTE Get everything that our snake will need to know, i.e. everything to set up our grid.
-    board = data.get("board")
-    height = board.get("height")
-    width = board.get("width")
-    food = data.get("board").get("food")
-    snakes = data.get("board").get("snakes")
-
-    #NOTE Get all the information about our snake
-    thisSnake = data.get("you")
-    thisHealth = thisSnake.get("health")
-    thisBody = thisSnake.get("body")
-
-    #NOTE Batch above groups of information into tuples to pass into master
-    environment = (board, height, width, food, snakes)
-    ourSnake = (thisSnake, thisHealth, thisBody)
-
-    #NOTE MasterTower is where the magic happens, here we "build" our grid
-    result = MasterTower.initGrid(environment, ourSnake)
-
-    #NOTE get information about our snake
-    ourSnakeX = thisBody[0].get("x")
-    ourSnakeY = thisBody[0].get("y")
 
     if debug:
-        start = timer()
+        start = timer() #NOTE THIS IS OUR TIMER START POINT
         print('')
-        print("Health:{}".format(thisHealth))
+        print("Health:{}".format(myHealth))
         print('')
-        print("Game height:{} , Game width: {}".format(height, width))
+        print("Game height:{}, Game width:{}".format(height,width))
         print('')
         print('turn = {}'.format(data.get("turn")))
+
+
+    #NOTE grid_options[0] = general_grid // grid_options[1] = food_grid
+    grid_options = controller.grid_setup(food, width, height, snakes, mySnake, you.get("id"))
+
+    #NOTE Now, set our coordinates!
+    mySnakeX = mySnake[0].get("x")
+    mySnakeY = mySnake[0].get("y")
+
+    #NOTE Search for the coordinates of the closest food pellet
+    target_food = controller.get_closest_food(grid_options[1], mySnakeX, mySnakeY)
+
+    #NOTE Get the next move based on the pellet
+    next_move = controller.get_move(grid_options, target_food, mySnakeX, mySnakeY, height, width, mySnake, myHealth)
+
+    if debug:
+        #NOTE This is the end reference point of the timer. Just to get a good idea of what the runtime of the program is in total
+        end = timer()
         print('')
+        print("RUNTIME: {0}ms. MAX 200ms, currently using {1}%".format(((end - start) * 1000),(((end - start) * 1000) / 2)))
 
-    #NOTE get a dictionary of distances from all food
-    distances = MasterTower.get_food_dictionary(ourSnakeX, ourSnakeY, result[1])
-
-    #NOTE get our move based on distances from food
-    next_move = MasterTower.get_next_move(distances, )
-
-    return jsonify (MasterTower.get_move(ourSnakeX, ourSnakeY, result[1])) 
-
-            
+    #NOTE Return the move in the JSON object wrapper
+    return jsonify(
+    move = next_move #NOTE This is what controls where the snake goes!
+    )
 
 @app.route("/end", methods=["POST"])
-def end(): 
+def end():
     return '', 200
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', debug=True, use_reloader=True)
+app.run(host='0.0.0.0', debug=True, use_reloader=True)
