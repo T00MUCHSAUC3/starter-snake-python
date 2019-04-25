@@ -18,7 +18,6 @@ def start():
 def move():
     debug = True
     data = request.get_json()
-    print(data)
     
     game = data.get("game")
     game_id = data.get("id")
@@ -44,8 +43,8 @@ def move():
     result = MasterTower.initGrid(environment, ourSnake)
 
     #NOTE get information about our snake
-    ourSnakeX = thisBody[0].get("X")
-    ourSnakeY = thisBody[0].get("Y")
+    ourSnakeX = thisBody[0].get("x")
+    ourSnakeY = thisBody[0].get("y")
 
     if debug:
         start = timer()
@@ -57,7 +56,15 @@ def move():
         print('turn = {}'.format(data.get("turn")))
         print('')
 
-    print(result)
+    #NOTE get a dictionary of distances from all food
+    distances = MasterTower.get_food_dictionary(ourSnakeX, ourSnakeY, result[1])
+
+    #NOTE get our move based on distances from food
+    next_move = MasterTower.get_next_move(distances, )
+
+    return jsonify (MasterTower.get_move(ourSnakeX, ourSnakeY, result[1])) 
+
+            
 
 @app.route("/end", methods=["POST"])
 def end(): 

@@ -16,7 +16,6 @@ def initGrid(env, OS):
     for coord in env[3]:
         x = coord.get("x")
         y = coord.get("y")
-        print("FOOD: ", x, y)
         food_coord.append([x, y])
 
     #NOTE WHERE ARE THE OTHER SNAKES?
@@ -58,6 +57,16 @@ def get_snakes(snakes, ourSnakeID, init_grid):
             y = coord.get("y")
             init_grid[y][x] = 0
 
+def get_food_dictionary(ourSnakeX, ourSnakeY, food):
+
+    #NOTE Map the coordinates of food to their respective euclidean distance
+    closest_food = {}
+    for coord in food:
+        this_distance = get_distance([ourSnakeX, ourSnakeY], coord)
+        closest_food[tuple(coord)] = this_distance
+
+    print(closest_food)
+    return "left"
 
 def get_distance(point_x, point_y):
 
@@ -65,7 +74,7 @@ def get_distance(point_x, point_y):
     This method will get the distance between two points
     """
 
-    return (math.hypot(point_x[0] - point_y[0], point_x[1] - point_y[1]))
+    return (abs(math.hypot(point_x[0] - point_y[0], point_x[1] - point_y[1])))
 
 def closestFood():
 
